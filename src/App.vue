@@ -13,6 +13,8 @@
                 </div>
                 <button class="btn-primary" @click="submit">Submit</button>
                 <hr>
+                <input type="text" class="form-control" v-model="node">
+                <hr>
                 <button class="btn-primary" @click="fetchData">Get Data</button>
                 <p></p>
                 <ui class="list-group">
@@ -32,19 +34,33 @@
                     username: '',
                     email: ''
                 },
-                users: []
+                users: [],
+                resource: {},
+                node: 'data'
             };
         },
         methods: {
             submit(){
-                this.$http.post('https://vuejs-http-a2b48.firebaseio.com/data.json', this.user).then(res => {
-                    console.log(res);
-                }, err => {
-                    console.log(err);
-                });
+                // this.$http.post('data.json', this.user).then(res => {
+                //     console.log(res);
+                    
+                // }, err => {
+                //     console.log(err);
+                // });
+                // this.resource.save({}, this.user);
+                this.resource.saveAlt(this.user);
             },
             fetchData(){
-                this.$http.get('https://vuejs-http-a2b48.firebaseio.com/data.json').then(res => {
+                // this.$http.get('data.json').then(res => {
+                //     return res.json();
+                // }).then(data => {
+                //     const resArray = [];
+                //     for(let key in data){
+                //         resArray.push(data[key]);
+                //     }
+                //     this.users = resArray;
+                // });
+                this.resource.getData({node: this.node}).then(res => {
                     return res.json();
                 }).then(data => {
                     const resArray = [];
@@ -54,6 +70,13 @@
                     this.users = resArray;
                 });
             }
+        },
+        created(){
+            const customAction = {
+                saveAlt: {method: 'POST', url:'alternative.json'},
+                getData: {methods: 'GET'}
+            }
+            this.resource = this.$resource('{node}.json', {}, customAction);
         }
     }
 </script>
